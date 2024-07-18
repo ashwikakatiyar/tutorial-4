@@ -1,0 +1,16 @@
+---
+title: "Models"
+author: "Ashwika Katiyar"
+format: html
+execute: 
+  echo: false
+---
+
+```{r}
+#| label: setup
+#| message: false
+library(tidyverse)
+```
+
+The data we have came from a YouGov poll of 1,559 US adult citizens, conducted March 10 - 12, 2024. We seek to determine the proportion of all votes in the 2024 election that will be cast for Joe Biden.
+
