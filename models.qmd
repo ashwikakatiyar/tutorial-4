@@ -10,7 +10,47 @@ execute:
 #| label: setup
 #| message: false
 library(tidyverse)
+library(brms)
+library(tidybayes)
+library(gtsummary)
+library(gtsummary)
 ```
 
-The data we have came from a YouGov poll of 1,559 US adult citizens, conducted March 10 - 12, 2024. We seek to determine the proportion of all votes in the 2024 election that will be cast for Joe Biden. The sentiment of voters towards Biden might change  significantly over the course of the election campaign.
+```{r}
+#| label: model
+#| cache: true
+poll_data <- tibble(biden = c(rep(1, 655), 
+                              rep(0, 904)))
+fit_bern <- brm(formula = biden ~ 1, 
+                data = poll_data, 
+                family = bernoulli(), 
+                refresh = 0, 
+                silent = 2, 
+                seed = 9)
+ndata <- tibble(.rows = 1)
+```
+
+```{r}
+#| label: plot
+fit_bern |> 
+  add_epred_draws(newdata = ndata) |> 
+  select(.epred) |>
+  ggplot(aes(x = .epred)) + 
+  geom_density(aes(y = after_stat(count / sum(count)))) +
+  scale_x_continuous(labels = scales::percent_format()) +
+  scale_y_continuous(labels = scales::percent_format())
+```
+
+The data we have came from a YouGov poll of 1,559 US adult citizens, conducted March 10 - 12, 2024. We seek to determine the proportion of all votes in the 2024 election that will be cast for Joe Biden. The sentiment of voters towards Biden might change  significantly over the course of the election campaign. In the poll, Biden’s support was much less than 50%. We estimate that Biden’s percentage of the vote in Election Day will be about 42%, plus or minus 2.5%.
+
+$$ biden_i =  \mu + \epsilon_i $$
+$$𝐿𝐴𝑇𝐸𝑋$$
+
+
+```{r}
+#| label: model_parameters
+tbl_regression(fit_bern, intercept = TRUE)
+```
+
+
 
